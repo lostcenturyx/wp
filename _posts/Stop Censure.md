@@ -3,7 +3,7 @@
 layout: post  
 title: Stop Censure  
 subtitle: Write-Up pour le Cybört CTF  
-tags: [writeup, injection, command, cybort, CTF]  
+tags: [writeup, injection, command, CTF]  
 comments: true
 
 ---
