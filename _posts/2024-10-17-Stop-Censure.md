@@ -2,7 +2,7 @@
 
 layout: post  
 title: Stop Censure  
-subtitle: Write-Up pour le Cybört CTF  
+subtitle: Write-Up pour le Nobrackets CTF  
 tags: [writeup, injection, command, CTF]  
 comments: true
 
