@@ -8,7 +8,7 @@ comments: true
 
 ---
 
-Salut ! Voici mon write-up sur le challenge **Stop Censure** du Nobrackets CTF. Ce challenge exploite une vulnérabilité d'injection de commande, à travers l'utilisation de `subprocess. Merci à `Drahoxx` ! 
+Salut ! Voici mon write-up sur le challenge **Stop Censure** du Nobrackets CTF. Ce challenge exploite une vulnérabilité d'injection de commande, à travers l'utilisation de `subprocess`. Merci à `Drahoxx` ! 
 
 ## Premier coup d'œil
 
