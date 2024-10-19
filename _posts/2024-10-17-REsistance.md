@@ -2,35 +2,33 @@
 
 layout: post  
 title: REsistance  
-subtitle: Write-Up pour le Nobrackets CTF 
+subtitle: Write-Up pour le Nobrackets CTF  
 tags: [writeup, reverse-engineering, CTF, Endeavxor]  
 comments: true
 
 ---
 
-Salut à tous ! Aujourd'hui, je vais vous parler du challenge **REsistance** du NoBracket CTF, un challenge de reverse engineering qui nous met au défi de trouver un flag caché dans un fichier binaire. Voici les étapes détaillées que j'ai suivies pour résoudre ce défi.
+Salut à tous ! Aujourd'hui, je vais vous parler du challenge **REsistance** du NoBracket CTF, un challenge de reverse engineering qui nous met au défi de trouver un flag caché dans un fichier binaire. Prêt à plonger dans les méandres du code ? Voici les étapes que j'ai suivies pour résoudre ce défi. 🚀
 
-## Analyse initiale
+## Analyse initiale 🔍
 
-Le challenge commence avec un fichier binaire nommé `binary`. Le tag *reverse* nous indique qu'il s'agit d'un challenge de rétro-ingénierie. L'énoncé nous donne aussi un indice : "Les chaînes de caractères peuvent être intéressantes..."
+Le challenge commence avec un fichier binaire nommé `binary`. Le tag *reverse* nous donne un petit indice sur la nature du défi. Mais ce qui attire mon attention, c'est la mention des "chaînes de caractères intéressantes"... Hmm, ça sent le flag bien caché dans le binaire ! 🕵️‍♂️
 
-C'est souvent le genre d'indice qui indique que le flag est probablement encodé ou caché quelque part dans le binaire. Cela m'a fait penser à deux outils utiles : **strings** pour extraire les chaînes de caractères lisibles d'un fichier, et **Dogbolt**, un décompilateur en ligne très pratique pour analyser rapidement le code binaire.
+Quand je vois ce genre d'indice, je pense immédiatement à deux outils : **strings** pour jeter un coup d'œil aux chaînes lisibles, et **Dogbolt**, mon allié pour la rétro-ingénierie rapide.
 
-## Étape 1 : Utilisation de `strings`
+## Étape 1 : Utilisation de `strings` 🧵
 
-Avant de faire du reverse engineering profond, j'ai lancé une première analyse rapide avec la commande `strings` pour voir s'il y avait des chaînes de caractères significatives directement visibles dans le fichier binaire. Cette commande permet d'extraire toutes les chaînes de caractères lisibles dans un fichier.
+Avant de creuser profondément, je commence par une analyse basique avec `strings`. C'est un bon moyen de voir s'il y a des indices évidents qui traînent dans le binaire.
 
 ```bash
 strings binary
 ```
 
-Cependant, la commande `strings` ne m'a pas donné de résultat utile directement. Il n'y avait pas de flag visible dans les chaînes de caractères. C'est à ce moment que j'ai décidé d'utiliser **Dogbolt** pour aller plus loin dans l'analyse.
+Malheureusement, rien d'intéressant n'est ressorti. Aucune trace de flag visible à l'œil nu... Pas de panique, on a encore quelques tours dans notre sac. Direction **Dogbolt** pour des choses plus sérieuses ! 💻
 
-## Étape 2 : Analyse avec Dogbolt
+## Étape 2 : Analyse avec Dogbolt 🧠
 
-Comme je ne pouvais rien extraire directement avec `strings`, j'ai uploadé le fichier sur **Dogbolt**, un outil en ligne qui permet de décompiler ou désassembler des fichiers binaires. Cela permet de voir une version plus lisible du code machine, ce qui aide à comprendre ce que fait le programme.
-
-J'ai sélectionné **Binary Ninja** comme décompilateur, car il est performant pour l'analyse des binaires. Une fois le fichier uploadé et analysé, j'ai récupéré l'output suivant :
+N'ayant rien trouvé avec `strings`, j'upload le binaire sur **Dogbolt** pour le décompiler. J'ai utilisé **Binary Ninja** comme décompilateur, car il est particulièrement efficace pour analyser les binaires. Une fois le fichier analysé, je tombe sur cet extrait juteux :
 
 ```c
 void* const var_58 = "NBCTF{S7";
@@ -39,11 +37,11 @@ void* const var_48 = "eP_for_7";
 void* const var_40 = "he_W1N!}";
 ```
 
-Dans cet extrait, on peut clairement voir quatre variables qui contiennent des parties du flag. Mais avant d'aller plus loin, j'ai voulu mieux comprendre le contexte dans lequel ces chaînes apparaissent dans le code.
+Bingo ! 🎯 On peut clairement voir des morceaux de flag ici, mais je préfère m'assurer du contexte avant de célébrer trop vite. Continuons à décortiquer le code pour comprendre comment il est utilisé.
 
-## Étape 3 : Analyse du code principal
+## Étape 3 : Analyse du code principal 🔑
 
-En explorant plus en détail l'output de **Dogbolt**, j'ai découvert la fonction `main()` du programme, qui contient la logique principale. Voici à quoi elle ressemble :
+En explorant le code de **Dogbolt**, je tombe sur la fonction `main()`. C'est là que tout se passe. Voici ce que j'ai trouvé :
 
 ```c
 int32_t main(int32_t argc, char** argv, char** envp)
@@ -96,35 +94,35 @@ int32_t main(int32_t argc, char** argv, char** envp)
 }
 ```
 
-### Ce que fait le code :
+### Ce que fait le code 🔍 :
 
-1. **Affichage** : Le programme demande à l'utilisateur d'entrer le flag avec `printf("Entrez le flag : ");`.
-2. **Lecture du flag** : Il utilise `fgets()` pour lire l'input de l'utilisateur.
-3. **Vérification de la longueur** : Si la longueur du flag est différente de 32 caractères (`strlen(&buf) != 0x20`), il affiche "Flag incorrect".
-4. **Comparaison des segments** : Ensuite, il compare chaque segment du flag entré par l'utilisateur avec les morceaux de flag contenus dans les variables `var_58`, `var_50`, `var_48`, et `var_40`.
-5. **Validation** : Si toutes les parties correspondent, il affiche "Flag correct ! Bien jou".
+1. **Demande de flag** : Le programme demande à l'utilisateur de saisir un flag via `printf("Entrez le flag : ");`.
+2. **Lecture de l'entrée** : Il utilise `fgets()` pour lire l'input de l'utilisateur.
+3. **Vérification de la longueur** : Si la longueur du flag n'est pas de 32 caractères, il affiche "Flag incorrect".
+4. **Comparaison des segments** : Ensuite, il compare chaque segment du flag entré par l'utilisateur avec les morceaux de flag dans `var_58`, `var_50`, `var_48`, et `var_40`.
+5. **Validation finale** : Si tout correspond, le programme valide avec "Flag correct ! Bien jou". 🎉
 
-## Étape 4 : Reconstruction du flag
+## Étape 4 : Reconstruction du flag 🧩
 
-Grâce à l'analyse du code, j'ai pu confirmer que les quatre variables contenaient bien des parties du flag. Voici comment elles se présentent :
+Les morceaux de flag dans le code sont assez clairs. Voici comment ils se présentent :
 
 - `"NBCTF{S7"`
 - `"R1NGs_GR"`
 - `"eP_for_7"`
 - `"he_W1N!}"`
 
-En les assemblant, on obtient le flag suivant :
+En les assemblant, j'obtiens le flag complet :
 
 ```text
 NBCTF{S7R1NGs_GReP_for_7he_W1N!}
 ```
 
-C'est un flag bien formaté qui suit la structure habituelle des flags du CTF.
+C'est toujours satisfaisant quand tout se recolle parfaitement. 🏆
 
-## Conclusion
+## Conclusion 🎯
 
-Le challenge **REsistance** était un excellent exercice de reverse engineering. Il m'a permis d'utiliser des outils comme **Dogbolt** et d'analyser la structure d'un fichier binaire pour trouver un flag caché. Les chaînes de caractères étaient effectivement la clé pour résoudre ce défi, comme le suggérait l'indice dans l'énoncé. 
+Le challenge **REsistance** était un excellent exercice de reverse engineering. J'ai utilisé **Dogbolt** pour analyser le binaire et extraire les chaînes de caractères cachées, puis j'ai suivi la logique du programme pour comprendre comment le flag était validé. Au final, tout se résume à de la bonne vieille analyse de code et à quelques indices bien cachés.
 
-Merci à **Endeavxor** pour ce challenge ! J'ai beaucoup apprécié le processus de reverse engineering, et j'espère que ce write-up aidera d'autres participants à comprendre la méthodologie utilisée pour arriver au flag.
+Merci à **Endeavxor** pour ce challenge vraiment captivant. J'espère que ce write-up aidera d'autres participants à dénouer les mystères du reverse engineering.
 
 Flag : **NBCTF{S7R1NGs_GReP_for_7he_W1N!}**
