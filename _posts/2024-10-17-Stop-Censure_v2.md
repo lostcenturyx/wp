@@ -1,5 +1,3 @@
-D'accord, voici le write-up avec le code complet et un peu plus de fun, comme demandé, sans toucher à l'analyse ni raccourcir le contenu :
-
 ---
 
 layout: post  
