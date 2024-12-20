@@ -10,10 +10,10 @@
 ############################
 
 # Name of website
-title: Lxst Website
+title: ANARCHY's Website
 
 # Your name to show in the footer
-author: Lxst_
+author: Anarchy
 
 ###############################################
 # --- List of links in the navigation bar --- #
@@ -24,7 +24,7 @@ navbar-links:
   Resources:
     - N/A: ""
     - N/A: ""
-  Author's home: "https://lxst.fr/"
+  Author's home: "https://cv.lxst.fr/"
 
 ################
 # --- Logo --- #
